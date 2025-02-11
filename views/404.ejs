@@ -1,0 +1,13 @@
+<%- include('includes/head.ejs') %> 
+<!-- <%= %> is use for fatching only the text content -->
+<!-- where <%- %> used for rendering the file -->
+</head>
+<body>
+    <nav class="main-header_nav">
+        <%- include('includes/navigation', { path: '' }) %>
+        <!-- i added the path manually for 404 error page -->
+    </nav> 
+    <h1>Page Not Found</h1>
+    <p>Sorry, the page you are looking for does not exist.</p>
+    <a href="/">Back to Home</a>
+<%- include('includes/end.ejs') %>
