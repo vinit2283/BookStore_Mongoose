@@ -2,6 +2,8 @@ const Product = require('../models/product');
 
 exports.getProduct = (req, res, next) => {
     Product.fetchAll(products => {
+        console.log("products", products);
+
         // console.log('in the another middleware');
         // res.render('shop');
         // const products = adminData.products;
@@ -19,7 +21,7 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-    Product.fetchAll(products => {
+    Product.fetchAll(products => {        
         // console.log('in the another middleware');
         // res.render('shop');
         // const products = adminData.products;

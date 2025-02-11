@@ -20,7 +20,7 @@ exports.postAddProduct = (req, res, next) => {
     const imgUrl = req.body.imgUrl;
     const price = req.body.price;
     const description = req.body.description;
-    const product = new Product(title, imgUrl, price, description);
+    const product = new Product(title, imgUrl,  description, price);
     product.save();
     // console.log('In the middleware');
     // products.push({title: req.body.title});
