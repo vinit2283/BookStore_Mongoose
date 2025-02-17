@@ -3,10 +3,10 @@
 // const http = require('http');
 // const routes = require('./routs');
 
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const errorController = require('./controllers/error');
-const path = require('path');
 
 // const expressHbs = require('express-handlebars');
 
