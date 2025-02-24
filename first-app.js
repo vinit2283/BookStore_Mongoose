@@ -53,7 +53,6 @@ mongoose.connect('mongodb+srv://vinitaperions:1HvP8D4pDQYRSgWx@cluster0.x6fng.mo
         })
         console.log('Connected to database');
         app.listen(3000);
-    })
-    .catch(err => {
+    }).catch(err => {
         console.log(err);
     });
