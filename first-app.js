@@ -1,40 +1,59 @@
-// fs.writeFileSync('hello.txt', 'Hello from Node.js'); //The writeFileSync method is writing the string 'Hello from Node.js' to a file named hello.txt. If the file does not exist, it will be created. If it does exist, its content will be overwritten.
-
-// const http = require('http');
-// const routes = require('./routs');
-
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const errorController = require('./controllers/error');
+const mongoose = require('mongoose');
+const User = require('./models/user');
+// const db = require('./util/database') 
 
-// const expressHbs = require('express-handlebars');
+const app = express();
 
-const app = express();  
-
-// app.engine('hbs', 
-//     expressHbs({
-//         layoutsDir: 'views/layouts', 
-//         defaultLayout: 'main-layout', 
-//         extname:'hbs'
-//     })
-// ); //we can change the extention 'hbs' using the expressHbs 
-
-app.set('view engine','ejs');
+app.set('view engine', 'ejs');
 // app.set('view engine','hbs');
-app.set('views','views');
+app.set('views', 'views');
 
 const adminRouts = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
-app.use(bodyParser.urlencoded({extended: false})); 
-app.use(express.static(path.join(__dirname,'public'))); //this is used to serve static files like css, images, etc
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public'))); //this is used to serve static files like css, images, etc
 
-app.use('/admin',adminRouts);
+app.use((req, res, next) => {
+    User.findById('67bc37038c80101b3a2df835')
+        .then(user => {
+            // req.user = new User(user.name, user.email, user.cart, user._id);
+            req.user = user; //this will make the user object available in all the requests, so that we can use it in the views
+            next();
+        })
+        .catch(err => {
+            console.log(err);
+        });
+});
+
+app.use('/admin', adminRouts);
 app.use(shopRoutes);
 
 
 // Move the 404 error handler to the end
 app.use(errorController.get404Page);
 
-app.listen(3000); //this is the same as the above two lines of code
+mongoose.connect('mongodb+srv://vinitaperions:1HvP8D4pDQYRSgWx@cluster0.x6fng.mongodb.net/shop') // we can change database 'name' collection folder name before .net/' name ' 
+    .then(result => {
+        User.findOne().then(user => {
+            if (!user) {
+                const user = new User({
+                    name: 'Vinit',
+                    email: 'vinitaperions@gmail.com',
+                    cart: {
+                        items: []
+                    }
+                })
+                user.save()
+            }
+        })
+        console.log('Connected to database');
+        app.listen(3000);
+    })
+    .catch(err => {
+        console.log(err);
+    });

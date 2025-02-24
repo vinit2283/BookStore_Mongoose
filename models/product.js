@@ -1,78 +1,106 @@
-const fs = require('fs');
-const path = require('path');
-const Cart = require('./cart');
+const mongoose = require('mongoose');
 
-const p = path.join(
-  path.dirname(process.mainModule.filename),
-  'data',
-  'products.json'
-);
+const Schema = mongoose.Schema;
 
-const getProductsFromFile = cb => {
-  fs.readFile(p, (err, fileContent) => {
-    if (err) {
-      cb([]);
-    } else {
-      cb(JSON.parse(fileContent));
-    }
-  });
-};
-
-module.exports = class Product {
-  constructor(id, title, imgUrl, description, price) {
-    this.id = id;
-    this.title = title;
-    this.imgUrl = imgUrl;
-    this.description = description;
-    this.price = price;
+const productSchema = new Schema({
+  title: {
+    type: String,
+    required: true
+  },
+  imgUrl: {
+    type: String,
+    required: true
+  },
+  price: {
+    type: Number,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   }
+});
 
-  save() {
-    getProductsFromFile(products => {
-      if (this.id) {
-        const existingProductIndex = products.findIndex(prod => prod.id === this.id);
-        const updatedProducts = [...products];
-        updatedProducts[existingProductIndex] = this;
-        // now we are going to update the products array with the new product
-        fs.writeFile(p, JSON.stringify(updatedProducts), err => {
-          console.log(err);
-        });
-      } else {
-        // if there is no id, we are going to add a new product
-        this.id = Math.random().toString(); // it will generate the random id for each product and toString will convert it into string
-        // console.log(this);
-        products.push(this);
-        fs.writeFile(p, JSON.stringify(products), err => {
-          console.log(err);
-        });
-      }
-    });
-  }
+module.exports = mongoose.model('Product', productSchema);
 
-  static deleteById(id){
-    getProductsFromFile(products => {
-      const product = products.findIndex(prod => prod.id === id);
-      const updatedProducts = products.filter(prod => prod.id !== id);
-      fs.writeFile(p, JSON.stringify(updatedProducts), err => {
-        if(!err){
-          // Cart.deleteProduct(id, updatedProducts.find(prod => prod.id === id).price);
-          // we can reduce the above code to simply create a new product object and pass it to the deleteProduct method
-          // const product = products.find(prod => prod.id === id);
-          Cart.deleteProduct(id, product.price);
-        }
-      });
-    });
-  }
+// const mongodb = require('mongodb');
+// const getDb = require('../util/database').getDb;
 
-  static fetchAll(cb) {
-    //static method can be called without creating an instance of the class. That's why we are using static method here.
-    getProductsFromFile(cb);
-  }
+// class Product {
+//   constructor(title, price, description, imgUrl, id, userId) {
+//     this.title = title;
+//     this.price = price;
+//     this.description = description;
+//     this.imgUrl = imgUrl;
+//     this._id = id;
+//     this.userId = userId;
+//   }
 
-  static findById(id, cb) {
-    getProductsFromFile(products => {
-      const product = products.find(p => p.id === id);
-      cb(product);
-    });
-  }
-};
+//   save() {
+//     const db = getDb();
+//     let dbop;
+//     if (this._id) {
+//       //update product
+//       dbop = db.collection('products').updateOne({ _id: new mongodb.ObjectId(this._id) }, { $set: this }); // updateOne update only one product, and it contain the two arguments(first i use the 'filter' that defines which element or which document we want to update )
+//       // The second argument is specify how to update that document ex. [1st, 2nd] => [this, updation for this element] 
+//       // $set is in build fuction of mongodb
+//     } else {
+//       //insert product
+//       dbop = db.collection('products').insertOne(this);
+//     }
+//     return dbop
+//       .then(result => {
+//         console.log(result);
+//       })
+//       .catch(err => {
+//         console.log(err);
+//       });
+//   }
+
+//   static deleteById(prodId) {
+//     const db = getDb();
+//     return db.collection('products').deleteOne({ _id: new mongodb.ObjectId(prodId) })
+//       .then(result => {
+//         console.log('Deleted');
+//       })
+//       .catch(err => {
+//         console.log(err);
+//       });
+//   }
+
+//   static fetchAll() {
+//     const db = getDb();
+//     return db.collection('products')
+//       .find() //in build method in mongodb
+//       .toArray()
+//       .then(products => {
+//         console.log(products);
+//         return products;
+//       })
+//       .catch(err => {
+//         console.log(err);
+//       });
+//   }
+
+//   static findById(prodId) {
+//     const db = getDb();
+//     return db.collection('products')
+//       .find({ _id: new mongodb.ObjectId(prodId) }) // it will find the id but not fetched because at the database _id stored in the BSON formate so that i have to import the mongodb in this file. Also you have to pass the new mongodb.ObjectId() so that it will show at page (show product when click on 'detail')
+//       .next()
+//       .then(product => {
+//         console.log(product);
+//         return product;
+//       })
+//       .catch(err => {
+//         console.log(err);
+//       })
+//   }
+// }
+
+// module.exports = Product;
+
