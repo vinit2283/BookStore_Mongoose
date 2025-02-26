@@ -25,17 +25,18 @@
                     <a class="<%= path === '/admin/products' ? 'active' : '' %>" href="/admin/products">Admin Products
                     </a>
                 </li>
-                <% } %>
-        </ul>
-        <ul class="main-header_item-list">
-            <li class="main-header_item">
-                <a class="<%= path === '/login' ? 'active' : '' %>" href="/login">Login</a>
-            </li>
-            <li class="main-header_item">
-                <form action="/logout" method="post">
-                    <button class="btn" type="submit">Logout</button>
-                </form>
-            </li>
+                <li class="main-header_item">
+                    <form action="/logout" method="post">
+                        <button class="btn" type="submit">Logout</button>
+                    </form>
+                </li>
+                <% } else { %>
+                    <ul class="main-header_item-list">
+                        <li class="main-header_item">
+                            <a class="<%= path === '/login' ? 'active' : '' %>" href="/login">Login</a>
+                        </li>
+                    </ul>
+                    <% } %>
         </ul>
     </nav>
 </header>
