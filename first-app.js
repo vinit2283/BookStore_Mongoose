@@ -37,7 +37,11 @@ app.use(
 );
 
 app.use((req, res, next) => {
-    User.findById('67bc37038c80101b3a2df835')
+    // User.findById('67bc37038c80101b3a2df835')
+    if (!req.session.user) { //if we don't have user that stored in session then it ......
+        return next();
+    }
+    User.findById(req.session.user._id)
         .then(user => {
             // req.user = new User(user.name, user.email, user.cart, user._id);
             req.user = user; //this will make the user object available in all the requests, so that we can use it in the views
