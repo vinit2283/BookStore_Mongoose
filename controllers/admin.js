@@ -9,7 +9,7 @@ exports.getAddProduct = (req, res, next) => {
         pageTitle: 'Add Product',
         path: '/admin/add-product',
         editing: false,
-        isAuthenticated: req.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn
         // formsCSS: true,
         // productCSS: true,
         // activeAddProduct: true
@@ -50,7 +50,7 @@ exports.getEditProduct = (req, res, next) => {
                 path: '/admin/edit-product',
                 editing: editMode, //This is a flag that we can use in the template to determine if we are in edit mode or not
                 product: product,
-                isAuthenticated: req.isLoggedIn //This is a flag that we can use in the template to determine if the user is authenticated
+                isAuthenticated: req.session.isLoggedIn //This is a flag that we can use in the template to determine if the user is authenticated
             });
         })
         .catch(err => {
@@ -108,7 +108,7 @@ exports.getProducts = (req, res, next) => {
                 prods: products,
                 pageTitle: 'Admin Products',
                 path: '/admin/products',
-                isAuthenticated: req.isLoggedIn
+                isAuthenticated: req.session.isLoggedIn
             });
         })
         .catch(err => {
