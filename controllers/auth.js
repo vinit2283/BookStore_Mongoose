@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
 exports.getLogin = (req, res, next) => {
@@ -21,44 +22,82 @@ exports.getSignup = (req, res, next) => {
     });
 };
 exports.postLogin = (req, res, next) => {
-    User.findById('67bfec3128d771cc3f7bdee2')
+    const email = req.body.email;
+    const password = req.body.password;
+    User.findOne({ email: email })
         .then(user => {
-            req.session.isLoggedIn = true;
-            req.session.user = user;
-            req.session.save(err => {
-                console.log(err);
-                res.redirect('/');
-            });
+            if (!user) {
+                return res.redirect('/login');
+            }
+            bcrypt.compare(password, user.password)
+                .then(doMatch => {
+                    if (doMatch) {
+                        req.session.isLoggedIn = true;
+                        req.session.user = user;
+                        return req.session.save(err => {
+                            console.log(err);
+                            res.redirect('/');
+                        });
+                    }
+                    res.redirect('/login');
+                })
+                .catch(err => {
+                    console.log(err);
+                });
         })
         .catch(err => {
             console.log(err);
         });
-    // res.setHeader('set-Cookie', 'loggedIn=true');
-    // req.isLoggedIn = true; // storing the information that i am loggedin in this loggedin
 };
+// User.findById('67bfec3128d771cc3f7bdee2')
+//     .then(user => {
+//         req.session.isLoggedIn = true;
+//         req.session.user = user;
+//         req.session.save(err => {
+//             console.log(err);
+//             res.redirect('/');
+//         });
+//     })
+//     .catch(err => {
+//         console.log(err);
+//     });
+// res.setHeader('set-Cookie', 'loggedIn=true');
+// req.isLoggedIn = true; // storing the information that i am loggedin in this loggedin
+// };
 exports.postSignup = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
-    const confirmPassword = req.body.confirmPassword;
+    // const confirmPassword = req.body.confirmPassword;
+
+    // console.log('Received data:', { email, password, confirmPassword });
+
     User.findOne({ email: email })
         .then(userDoc => {
             if (userDoc) {
+                console.log('User already exists');
                 return res.redirect('/signup');
             }
+            return bcrypt.hash(password, 12);
+        })
+        .then(hashPassword => {
+            if (!hashPassword) return; // Stop if user already exists // you can also add nested chain loop this all hashpassword with bcrypt using .then
             const user = new User({
                 email: email,
-                password: password,
+                password: hashPassword, // If hashing is needed, do it before saving
                 cart: { items: [] }
             });
-            return user.save();
-        })
-        .then(result => {
-            res.redirect('/login');
+            console.log('Saving user to DB');
+            user.save().then(() => {
+                console.log('User saved successfully, redirecting to login');
+                return res.redirect('/login');
+            });
         })
         .catch(err => {
-            console.log(err);
+            console.error('Error during signup:', err);
+            res.status(500).send("Internal Server Error");
         });
 };
+
 exports.postLogout = (req, res, next) => {
     req.session.destroy(err => {
         console.log(err);

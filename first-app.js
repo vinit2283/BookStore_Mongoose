@@ -63,18 +63,18 @@ app.use(errorController.get404Page);
 // mongoose.connect('mongodb+srv://vinitaperions:1HvP8D4pDQYRSgWx@cluster0.x6fng.mongodb.net/shop') // we can change database 'name' collection folder name before .net/' name ' 
 mongoose.connect(MONGO_URI)
     .then(result => {
-        User.findOne().then(user => {
-            if (!user) {
-                const user = new User({
-                    name: 'Vinit',
-                    email: 'vinitaperions@gmail.com',
-                    cart: {
-                        items: []
-                    }
-                })
-                user.save()
-            }
-        })
+        // User.findOne().then(user => {
+        //     if (!user) {
+        //         const user = new User({
+        //             name: 'Vinit',
+        //             email: 'vinitaperions@gmail.com',
+        //             cart: {
+        //                 items: []
+        //             }
+        //         })
+        //         user.save()
+        //     }
+        // })
         console.log('Connected to database');
         app.listen(3000);
     }).catch(err => {
